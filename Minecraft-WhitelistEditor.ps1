@@ -8,10 +8,20 @@ $ExistingUsers = @()
 $UsersToAdd = @()
 $NewUserInfo = @()
 
+# Checks to see if floodgate is installed (for Bedrock players) and reads the prefix character, otherwise it defaults to "."
+If(Test-Path -Path "$FilePath\plugins\floodgate\config.yml"){
+    $floodgate = Get-Content "$FilePath\plugins\floodgate\config.yml"
+    $prefix = (($floodgate -like "username-prefix*") -replace 'username-prefix: ') -replace '"'
+}
+else {
+    $prefix = "."
+}
+
 # Checks to see if there's already a whitelist file
+$FilePath = $FilePath -replace "\whitelist.json"
 if (Test-Path $FilePath){
     if (Get-ChildItem -Path $FilePath -Filter "whitelist.json"){
-        $confirm = Read-Host "Do you want to overwrite the existing whitelist.json file? [Y / N]"
+        $confirm = Read-Host "Do you want to append the existing whitelist.json file? [Y/N]"
         If($confirm -like "n*"){exit}
         $ExistingUsers = @(Get-Content -Path "$FilePath\whitelist.json" | ConvertFrom-Json)
     }
@@ -21,25 +31,16 @@ if (Test-Path $FilePath){
 if ($ExistingUsers) {
     ForEach($UserName in $UserNames){
         if ($ExistingUsers.name -notcontains $UserName){
-            if ($ExistingUsers.name -notcontains ".$UserName"){
+            if ($ExistingUsers.name -notcontains "$($prefix+$UserName)"){
                 $UsersToAdd += $UserName
             }
-            else {Write-Host ".$UserName - Bedrock Minecraft user already in whitelist" -ForegroundColor Yellow}
+            else {Write-Host "$($prefix+$UserName) - Bedrock Minecraft user already in whitelist" -ForegroundColor Yellow}
         }
         else {Write-Host "$UserName - Minecraft user already in whitelist" -ForegroundColor Yellow}
     }
 }
 else {
     $UsersToAdd = $UserNames
-}
-
-# Checks to see if floodgate is installed (for Bedrock players) and reads the prefix character, otherwise it defaults to "."
-If(Test-Path -Path "$FilePath\plugins\floodgate\config.yml"){
-    $floodgate = Get-Content "$FilePath\plugins\floodgate\config.yml"
-    $prefix = (($floodgate -like "username-prefix*") -replace 'username-prefix: ') -replace '"'
-}
-else {
-    $prefix = "."
 }
 
 # UUID lookup
