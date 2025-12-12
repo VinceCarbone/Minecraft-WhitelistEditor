@@ -48,7 +48,7 @@ ForEach($UserToAdd in $UsersToAdd){
     $UUID = $null
     Try{
         # Java players
-        $response = Invoke-WebRequest -Uri "https://playerdb.co/api/player/minecraft/$UserToAdd" -ErrorAction Stop
+        $response = Invoke-WebRequest -Uri "https://playerdb.co/api/player/minecraft/$UserToAdd" -UseBasicParsing -ErrorAction Stop
         $UUID = ($response.content | ConvertFrom-Json).data.Player.id
         $name = ($response.content | ConvertFrom-Json).data.Player.username
         Write-Host "$name - Minecraft user found" -ForegroundColor Green
@@ -56,7 +56,7 @@ ForEach($UserToAdd in $UsersToAdd){
     Catch{
         Try{
             # Bedrock players
-            $response = Invoke-WebRequest -Uri "https://mcprofile.io/api/v1/bedrock/gamertag/$UserToAdd" -ErrorAction Stop
+            $response = Invoke-WebRequest -Uri "https://mcprofile.io/api/v1/bedrock/gamertag/$UserToAdd" -UseBasicParsing -ErrorAction Stop
             $UUID = ($response.content | ConvertFrom-Json).floodgateuid
             $name = "$prefix" + "$(($response.content | ConvertFrom-Json).gamertag)"
             Write-Host "$name - Bedrock Minecraft user found" -ForegroundColor Green     
