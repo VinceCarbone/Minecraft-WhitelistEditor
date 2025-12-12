@@ -30,8 +30,8 @@ if (Test-Path $FilePath){
 # If there's a whitelist, checks to see if the people you're trying to add are already present
 if ($ExistingUsers) {
     ForEach($UserName in $UserNames){
-        if ($ExistingUsers.name -notcontains $UserName){
-            if ($ExistingUsers.name -notcontains "$($prefix+$UserName)"){
+        if ($ExistingUsers.name -inotcontains $UserName){
+            if ($ExistingUsers.name -inotcontains ("$prefix$UserName")){
                 $UsersToAdd += $UserName
             }
             else {Write-Host "$($prefix+$UserName) - Bedrock Minecraft user already in whitelist" -ForegroundColor Yellow}
